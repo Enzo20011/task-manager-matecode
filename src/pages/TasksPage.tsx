@@ -4,7 +4,6 @@ import { useTasks } from '../hooks/useTasks';
 import { logout } from '../services/authService';
 import { TodoForm } from '../components/TodoForm';
 import { TodoList } from '../components/TodoList';
-import type { Task } from '../types';
 
 type FilterType = 'all' | 'pending' | 'completed';
 

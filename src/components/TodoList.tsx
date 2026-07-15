@@ -1,4 +1,4 @@
-import type { Task, NewTask } from '../types';
+import type { Task } from '../types';
 import { TodoItem } from './TodoItem';
 
 interface TodoListProps {
