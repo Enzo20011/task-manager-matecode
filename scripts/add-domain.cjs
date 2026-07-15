@@ -56,7 +56,7 @@ async function main() {
   // Add Vercel domain
   const newDomains = [...new Set([
     ...currentDomains,
-    'task-manager-matecode.vercel.app',
+    'gestor-estrategico-tareas-pim4.vercel.app',
     'localhost'
   ])];
 

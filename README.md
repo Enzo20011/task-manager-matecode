@@ -4,7 +4,7 @@ Aplicación web SPA del gestor estratégico de tareas. Permite autenticación de
 
 ## 🚀 Demo
 
-🔗 **https://task-manager-matecode.vercel.app**
+🔗 **https://gestor-estrategico-tareas-pim4.vercel.app**
 
 ---
 
