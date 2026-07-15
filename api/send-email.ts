@@ -42,14 +42,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     <ul>${pending.length > 0 ? pending.map(taskRow).join('') : '<li>¡Todo listo!</li>'}</ul>
 
     <hr/>
-    <small>Generado por Task Manager — MateCode</small>
+    <small>Generado por Gestor estratégico de tareas — PIM4</small>
   `;
 
   const command = new SendEmailCommand({
     Source: process.env.SES_FROM_EMAIL!,
     Destination: { ToAddresses: [to] },
     Message: {
-      Subject: { Data: '📋 Resumen de tus tareas — Task Manager' },
+      Subject: { Data: '📋 Resumen de tus tareas — Gestor estratégico de tareas' },
       Body: { Html: { Data: htmlBody } },
     },
   });

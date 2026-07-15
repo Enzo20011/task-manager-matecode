@@ -1,6 +1,6 @@
-# Task Manager — MateCode
+# Gestor estratégico de tareas — PIM4
 
-Aplicación web SPA de gestión de tareas para empleados de MateCode. Permite autenticación de usuarios, CRUD de tareas persistido en Firestore, envío de resúmenes por email con AWS SES, y deploy en producción.
+Aplicación web SPA del gestor estratégico de tareas. Permite autenticación de usuarios, CRUD de tareas persistido en Firestore, envío de resúmenes por email con AWS SES, y deploy en producción.
 
 ## 🚀 Demo
 
