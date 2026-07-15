@@ -9,10 +9,41 @@ type FilterType = 'all' | 'pending' | 'completed';
 
 export const TasksPage = () => {
   const { user } = useAuth();
-  const { tasks, loading, error, addTask, editTask, removeTask, toggle } = useTasks();
+  const { tasks, loading, error, addTask, editTask, removeTask, toggle, reorder } = useTasks();
   const [filter, setFilter] = useState<FilterType>('all');
-  const [emailSending, setEmailSending] = useState(false);
-  const [emailStatus, setEmailStatus] = useState<string | null>(null);
+  const [emailStatus, setEmailStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch {
+      console.error('Error al cerrar sesión');
+    }
+  };
+
+  const handleSendSummary = async () => {
+    setEmailStatus('loading');
+    try {
+      const res = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: user?.email,
+          tasks: tasks,
+        }),
+      });
+      if (res.ok) {
+        setEmailStatus('success');
+        setTimeout(() => setEmailStatus('idle'), 3000);
+      } else {
+        setEmailStatus('error');
+        setTimeout(() => setEmailStatus('idle'), 3000);
+      }
+    } catch {
+      setEmailStatus('error');
+      setTimeout(() => setEmailStatus('idle'), 3000);
+    }
+  };
 
   const filteredTasks = tasks.filter((t) => {
     if (filter === 'pending') return !t.completed;
@@ -20,76 +51,48 @@ export const TasksPage = () => {
     return true;
   });
 
-  const completedCount = tasks.filter((t) => t.completed).length;
   const pendingCount = tasks.filter((t) => !t.completed).length;
-
-  const handleSendEmail = async () => {
-    if (!user?.email) return;
-    try {
-      setEmailSending(true);
-      setEmailStatus(null);
-      const response = await fetch('/api/send-email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          to: user.email,
-          tasks,
-        }),
-      });
-      if (!response.ok) throw new Error('Error al enviar el email');
-      setEmailStatus('✅ Email enviado correctamente');
-    } catch {
-      setEmailStatus('❌ Error al enviar el email');
-    } finally {
-      setEmailSending(false);
-    }
-  };
+  const completedCount = tasks.filter((t) => t.completed).length;
 
   return (
     <div className="tasks-page">
       <header className="tasks-header">
         <div className="tasks-header__left">
-          <h1>Mis tareas</h1>
-          <p className="tasks-header__user">{user?.email}</p>
+          <h1 className="tasks-title">Mis tareas</h1>
+          <span className="tasks-user">{user?.email}</span>
         </div>
-        <div className="tasks-header__right">
+        <div className="tasks-header__actions">
           <button
-            id="send-email-btn"
-            className="btn btn-secondary"
-            onClick={handleSendEmail}
-            disabled={emailSending || tasks.length === 0}
+            className={`btn btn-secondary ${emailStatus === 'loading' ? 'btn--loading' : ''}`}
+            onClick={handleSendSummary}
+            disabled={emailStatus === 'loading'}
           >
-            {emailSending ? 'Enviando...' : '📧 Enviar resumen'}
+            {emailStatus === 'loading' ? '⏳ Enviando...' :
+             emailStatus === 'success' ? '✅ Enviado' :
+             emailStatus === 'error' ? '❌ Error al enviar el email' :
+             '📧 Enviar resumen'}
           </button>
-          <button id="logout-btn" className="btn btn-ghost" onClick={logout}>
+          <button className="btn btn-ghost" onClick={handleLogout}>
             Cerrar sesión
           </button>
         </div>
       </header>
 
-      {emailStatus && (
-        <div className={`status-banner ${emailStatus.startsWith('✅') ? 'status-banner--success' : 'status-banner--error'}`}>
-          {emailStatus}
+      <main className="tasks-main">
+        {error && <div className="alert alert--error">{error}</div>}
+
+        {/* Stats */}
+        <div className="tasks-stats">
+          <span className="stat">📋 Total: {tasks.length}</span>
+          <span className="stat stat--pending">⏳ Pendientes: {pendingCount}</span>
+          <span className="stat stat--done">✅ Completadas: {completedCount}</span>
         </div>
-      )}
 
-      <div className="tasks-stats">
-        <span className="stat">📋 Total: {tasks.length}</span>
-        <span className="stat stat--pending">⏳ Pendientes: {pendingCount}</span>
-        <span className="stat stat--done">✅ Completadas: {completedCount}</span>
-      </div>
-
-      <section className="tasks-form-section">
-        <h2>Nueva tarea</h2>
-        <TodoForm onSubmit={addTask} />
-      </section>
-
-      <section className="tasks-list-section">
-        <div className="tasks-filters">
+        {/* Filters */}
+        <div className="filters" role="group" aria-label="Filtrar tareas">
           {(['all', 'pending', 'completed'] as FilterType[]).map((f) => (
             <button
               key={f}
-              id={`filter-${f}`}
               className={`filter-btn ${filter === f ? 'filter-btn--active' : ''}`}
               onClick={() => setFilter(f)}
             >
@@ -98,19 +101,30 @@ export const TasksPage = () => {
           ))}
         </div>
 
-        {error && <div className="error-banner" role="alert">{error}</div>}
+        {/* New task form */}
+        <section className="new-task-section">
+          <h2 className="section-title">NUEVA TAREA</h2>
+          <TodoForm onSubmit={addTask} />
+        </section>
 
-        {loading ? (
-          <div className="loading-screen"><div className="spinner" /></div>
-        ) : (
-          <TodoList
-            tasks={filteredTasks}
-            onToggle={toggle}
-            onEdit={(id, updates) => editTask(id, updates)}
-            onDelete={removeTask}
-          />
-        )}
-      </section>
+        {/* Task list */}
+        <section className="task-list-section">
+          {loading ? (
+            <div className="loading-state">
+              <div className="spinner" />
+              <p>Cargando tareas...</p>
+            </div>
+          ) : (
+            <TodoList
+              tasks={filteredTasks}
+              onToggle={toggle}
+              onEdit={editTask}
+              onDelete={removeTask}
+              onReorder={reorder}
+            />
+          )}
+        </section>
+      </main>
     </div>
   );
 };

@@ -7,6 +7,7 @@ import {
   updateTask,
   deleteTask,
   toggleTask,
+  reorderTasks,
 } from '../services/taskService';
 
 export const useTasks = () => {
@@ -37,15 +38,19 @@ export const useTasks = () => {
   const addTask = async (task: NewTask) => {
     if (!user) return;
     try {
-      const newTask = await createTask(user.uid, task);
-      setTasks((prev) => [newTask, ...prev]);
+      const order = tasks.length;
+      const newTask = await createTask(user.uid, task, order);
+      setTasks((prev) => [...prev, newTask]);
     } catch (err) {
       setError('Error al crear la tarea');
       console.error(err);
     }
   };
 
-  const editTask = async (taskId: string, updates: Partial<Pick<Task, 'title' | 'description' | 'completed'>>) => {
+  const editTask = async (
+    taskId: string,
+    updates: Partial<Pick<Task, 'title' | 'description' | 'completed' | 'priority' | 'dueDate'>>
+  ) => {
     try {
       await updateTask(taskId, updates);
       setTasks((prev) =>
@@ -79,5 +84,18 @@ export const useTasks = () => {
     }
   };
 
-  return { tasks, loading, error, addTask, editTask, removeTask, toggle, refetch: fetchTasks };
+  const reorder = async (newOrder: Task[]) => {
+    // Optimistic update
+    setTasks(newOrder);
+    try {
+      await reorderTasks(newOrder);
+    } catch (err) {
+      setError('Error al reordenar las tareas');
+      // Rollback
+      fetchTasks();
+      console.error(err);
+    }
+  };
+
+  return { tasks, loading, error, addTask, editTask, removeTask, toggle, reorder, refetch: fetchTasks };
 };

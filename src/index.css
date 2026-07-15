@@ -607,3 +607,186 @@ body {
     justify-content: center;
   }
 }
+
+/* ============================================================
+   PRIORITY BADGES
+   ============================================================ */
+.priority-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 20px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.priority--low    { background: rgba(34, 197, 94, 0.15);  color: #22c55e; border: 1px solid rgba(34,197,94,0.3); }
+.priority--medium { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245,158,11,0.3); }
+.priority--high   { background: rgba(239, 68, 68, 0.15);  color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
+
+/* ============================================================
+   DUE DATES
+   ============================================================ */
+.due-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+  margin-top: 4px;
+}
+
+.due-date--overdue {
+  color: #ef4444;
+  font-weight: 600;
+}
+
+.todo-item--overdue {
+  border-left: 3px solid #ef4444;
+}
+
+/* ============================================================
+   DRAG HANDLE
+   ============================================================ */
+.todo-item__drag {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  flex-shrink: 0;
+  color: var(--color-text-dim);
+  cursor: grab;
+  font-size: 1.1rem;
+  letter-spacing: -1px;
+  padding: 0 4px;
+  border-radius: 4px;
+  transition: color 0.2s, background 0.2s;
+  user-select: none;
+  touch-action: none;
+}
+.todo-item__drag:hover { color: var(--color-primary); background: var(--color-primary-glow); }
+.todo-item__drag:active { cursor: grabbing; }
+
+/* ============================================================
+   TODO ITEM LAYOUT UPDATE (header + drag)
+   ============================================================ */
+.todo-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px 16px;
+  background: var(--color-surface-2);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  list-style: none;
+}
+.todo-item:hover { border-color: var(--color-border-hover); }
+
+.todo-item__content { flex: 1; min-width: 0; }
+
+.todo-item__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.todo-item__title {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--color-text);
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+.todo-item--completed .todo-item__title {
+  text-decoration: line-through;
+  color: var(--color-text-dim);
+}
+
+.todo-item__desc {
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+  margin: 4px 0 0;
+  line-height: 1.4;
+}
+
+.todo-item__check input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-primary);
+  cursor: pointer;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.todo-item__actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  opacity: 0.5;
+  transition: opacity 0.2s, background 0.2s;
+}
+.btn-icon:hover { opacity: 1; background: var(--color-surface); }
+.btn-icon--danger:hover { background: rgba(239,68,68,0.15); }
+
+/* ============================================================
+   FORM LAYOUT — Row for priority + date
+   ============================================================ */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.form-group select,
+.form-group input[type="date"] {
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+  font-size: 0.9rem;
+  font-family: inherit;
+  transition: border-color 0.2s;
+  cursor: pointer;
+}
+
+.form-group select:focus,
+.form-group input[type="date"]:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.form-group input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  opacity: 0.5;
+  cursor: pointer;
+}
+
+.form-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+@media (max-width: 480px) {
+  .form-row { grid-template-columns: 1fr; }
+  .todo-item__drag { display: none; }
+}
