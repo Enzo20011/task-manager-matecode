@@ -25,6 +25,8 @@ describe('TodoForm', () => {
       title: 'Mi tarea de prueba',
       description: 'Descripción de prueba',
       completed: false,
+      priority: 'medium',
+      dueDate: undefined,
     });
   });
 

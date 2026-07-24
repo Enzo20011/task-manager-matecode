@@ -129,9 +129,11 @@ npm test            # Correr tests una vez
 npm run test:watch  # Modo watch
 ```
 
-**Cobertura actual:**
+**Cobertura actual — 23 tests pasando:**
 - `TodoForm.test.tsx` — 5 tests ✅
 - `TodoList.test.tsx` — 3 tests ✅
+- `TodoItem.test.tsx` — 9 tests ✅
+- `taskService.test.ts` — 6 tests ✅
 
 ---
 
